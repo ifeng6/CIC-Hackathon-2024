@@ -6,6 +6,7 @@ from flask_cors import CORS
 import os
 import base64
 from collections import defaultdict
+import requests
 
 load_dotenv()
 
@@ -60,7 +61,21 @@ def hello_world():
 @app.route("/upload", methods=["POST"])
 def upload():
     if request.method == "POST":
-        input = request.json.get("input")
+        userId = request.form["userId"]
+        receiptId = request.form["receiptId"]
+        print(request.files)
+        if "file" not in request.files:
+            return jsonify({"error": "No file part"}), 400
+
+        image_file = request.files["file"]
+        if image_file.filename == "":
+            return jsonify({"error": "No selected file"}), 400
+
+        headers = {"Content-Type": "multipart/form-data"}
+        response = requests.post(
+            "http://localhost:8000/ocr/", files={"file": image_file}, headers=headers
+        )
+        print(response.text)
 
         system_prompt = """
             You are a helpful AI assistant who is an expert in identifying whether or not an item is food. You are given a text scan of an entire grocery store receipt that includes food items and non-food items.
