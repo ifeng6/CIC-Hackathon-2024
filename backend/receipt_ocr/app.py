@@ -26,10 +26,10 @@ def cleanText(text):
     text = text.replace("\f", "")
     lines = text.split("\n")
     keywords_to_exclude = [
-        "WHOLESALE", "GREEN TOWN", "Member", "SUBTOTAL", "TAX", "TOTAL", "CHIP Read",
+        "Member", "SUBTOTAL", "TAX", "TOTAL", "CHIP Read",
         "AID", "Seq", "APP#", "VISA", "Resp", "Tran IDs", "Merchant 'ID", "APPROVED",
         "AMOUNT", "CHANGE", "S TAX", "E TAX", "A TAX", "TOTAL TAX", "TOTAL NUMBER OF ITEMS SOLD",
-        "Thank You", "Please Come Again", "Whse", "Trm", "Trn", "OP", "Items Sold"
+        "Thank You", "Please Come Again", "Whse", "Trm", "Trn", "OP"
     ]
     
     cleaned_data = [
