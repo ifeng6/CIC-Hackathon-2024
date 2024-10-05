@@ -194,6 +194,7 @@ def calculate_fats(cals: int) -> int:
     # 20-35% of total daily calories
     return int(0.275 * cals)
 
+# Return true if the receipt is successfully added to the database
 def add_receipt_to_db(receipt_id: int, user_id: int, items: list, macros: list, cost: int) -> bool:
     try:
         dyanmodb.put_item(
@@ -211,6 +212,24 @@ def add_receipt_to_db(receipt_id: int, user_id: int, items: list, macros: list, 
         print(e)
         return False
     
+# Return true if the receipt is successfully added to the database
+def add_items_to_db(user_id: int, items: list) -> bool:
+    try:
+        for item in items:
+            dyanmodb.put_item(
+                TableName="items",
+                Item={
+                    "items": {"S": str(user_id)},
+                    "name": {"S": item["name"]},
+                    "quantity": {"S": item["quantity"]},
+                    "days_left": {"S": item["days_left"]},
+                }
+            )
+        return True
+    except Exception as e:
+        print(e)
+        return False
+    
 @app.route("/get_receipt", methods=["GET"])
 def get_receipt():
     if request.method == "GET":
@@ -221,7 +240,6 @@ def get_receipt():
             item.pop('receipts', None)
             item.pop('user', None)
         return jsonify(items)
-
 
 def generate_image(food_str: str):
     food_str = food_str.lower().replace(" ", "")
