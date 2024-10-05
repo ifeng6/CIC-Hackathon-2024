@@ -131,7 +131,7 @@ def upload():
 
 @app.route("/user", methods=["POST"])
 def create_profile():
-    if request.method == "POST" and request.content_type == "application/json":
+    if request.method == "POST":
         id = request.json["id"]
         age = request.json["age"]
         height = request.json["height"]
