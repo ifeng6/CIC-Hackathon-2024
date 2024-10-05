@@ -20,7 +20,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
         title: Text('Scanned Receipts'),
         centerTitle: true,
         automaticallyImplyLeading: true,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.green[100],
       ),
       body: ListView.builder(
         itemCount: widget.receipts.length,

@@ -6,6 +6,29 @@ import 'package:http/http.dart' as http;
 /** IP address of the OCR service */
 const SERVER_URL = "";
 
+Future<Map<String, dynamic>> getProfileMacros(Map<String, dynamic> requestBody) async {
+  try {
+    log(jsonEncode(requestBody).toString());
+    final response = await http.post(
+      Uri.parse('$SERVER_URL/createprofile'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(requestBody),
+    );
+    if (response.statusCode == 200) {
+      log("Server response:");
+      log(json.decode(response.body).toString());
+      return json.decode(response.body);
+    } else {
+      log("Code: ${response.statusCode} : ${json.decode(response.body).toString()}");
+      throw Exception("${response.statusCode} : ${response.body}");
+    }
+  } catch (error) {
+    rethrow;
+  }
+}
+
 
 /// Sends an HTTP POST request for OCR processing to the server
 ///

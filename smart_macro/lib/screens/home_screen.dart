@@ -9,6 +9,7 @@ import 'package:smart_macro/models/item_type.dart';
 import 'package:smart_macro/models/macro.dart';
 import 'package:smart_macro/models/pantry_item.dart';
 import 'package:smart_macro/models/receipt.dart';
+import 'package:smart_macro/screens/pantry_screen.dart';
 import 'package:smart_macro/screens/receipt_screen.dart';
 import 'package:smart_macro/screens/view_profile.dart';
 
@@ -76,6 +77,72 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
       ),
     ];
   }
+
+  List<PantryItem> generatePantryItems() {
+    return [
+      PantryItem(
+        name: 'Apples',
+        type: ItemType.countable,
+        quantity: 5,
+        daysLeftToExpire: 7,
+      ),
+      PantryItem(
+        name: 'Milk',
+        type: ItemType.liquid,
+        quantity: 1.5, // in liters
+        daysLeftToExpire: 2,
+      ),
+      PantryItem(
+        name: 'Chicken Breast',
+        type: ItemType.weight,
+        quantity: 1.0, // in kg
+        daysLeftToExpire: 3,
+      ),
+      PantryItem(
+        name: 'Orange Juice',
+        type: ItemType.liquid,
+        quantity: 2.0, // in liters
+        daysLeftToExpire: 5,
+      ),
+      PantryItem(
+        name: 'Rice',
+        type: ItemType.countable,
+        quantity: 2, // in kg
+        daysLeftToExpire: 10,
+      ),
+      PantryItem(
+        name: 'Yogurt',
+        type: ItemType.liquid,
+        quantity: 0.5, // in liters
+        daysLeftToExpire: 1, // Expiring soon
+      ),
+      PantryItem(
+        name: 'Flour',
+        type: ItemType.countable,
+        quantity: 1, // in kg
+        daysLeftToExpire: 30,
+      ),
+      PantryItem(
+        name: 'Pasta',
+        type: ItemType.countable,
+        quantity: 1, // in kg
+        daysLeftToExpire: 60,
+      ),
+      PantryItem(
+        name: 'Beef',
+        type: ItemType.weight,
+        quantity: 1.2, // in kg
+        daysLeftToExpire: 4,
+      ),
+      PantryItem(
+        name: 'Cheese',
+        type: ItemType.liquid,
+        quantity: 0.3, // in kg
+        daysLeftToExpire: 8,
+      ),
+    ];
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -226,10 +293,15 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
                 iconSize: 32, // Adjusted icon size
                 color: Colors.grey[800],
                 onPressed: () {
-                  // Navigate to PantryLoadingPage
+                  // // Navigate to PantryLoadingPage
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(builder: (context) => PantryLoadingPage()),
+                  // );
+
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => PantryLoadingPage()),
+                    MaterialPageRoute(builder: (context) => PantryScreen(pantryItems: generatePantryItems(),)),
                   );
                 },
               ),

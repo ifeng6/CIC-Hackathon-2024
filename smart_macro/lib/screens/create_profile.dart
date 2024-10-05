@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:smart_macro/components/text_field.dart';
+import 'package:smart_macro/loading_screens/profile_loading.dart';
 import 'package:smart_macro/models/activity_level.dart';
 import 'package:smart_macro/screens/home_screen.dart';
 
@@ -43,18 +44,28 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
 
   void onPressed() {
       var userProfile = Hive.box("userProfile");
-      userProfile.put("userId", generateRandomUserId());
+      int userId = generateRandomUserId();
+      userProfile.put("userId", userId);
       userProfile.put("name", nameController.text);
       userProfile.put("age", int.parse(ageController.text));
       userProfile.put("height", int.parse(heightController.text));
       userProfile.put("weight", int.parse(weightController.text));
       userProfile.put("activitylevel", activityLevelToString(selectedActivityLevel!));
-
       userProfile.put("hasProfile", true);
 
+
+      // Corrected parentheses for Navigator.pushReplacement
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => ReceiptScannerPage()),
+        MaterialPageRoute(
+          builder: (context) => ProfileLoadingScreen(
+            userId: userId,
+            height: int.parse(heightController.text),
+            age: int.parse(ageController.text),
+            weight: int.parse(weightController.text),
+            activityLevel: selectedActivityLevel!
+          ),
+        ),
       );
   }
 
