@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:smart_macro/components/text_field.dart';
@@ -32,8 +34,16 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
            selectedActivityLevel != null; // Ensure activity level is selected
   }
 
+  int generateRandomUserId() {
+    final Random random = Random();
+    int userId = random.nextInt(900000) + 100000; // Generates a number between 100000 and 999999
+    return userId;
+  }
+
+
   void onPressed() {
       var userProfile = Hive.box("userProfile");
+      userProfile.put("userId", generateRandomUserId());
       userProfile.put("name", nameController.text);
       userProfile.put("age", int.parse(ageController.text));
       userProfile.put("height", int.parse(heightController.text));

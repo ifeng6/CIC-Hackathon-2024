@@ -22,10 +22,14 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
   bool isEditingWeight = false;
   bool isEditingActivityLevel = false;
 
+  var userProfileBox = Hive.box('userProfile');
+  int? userId;
+
   @override
   void initState() {
     super.initState();
     loadProfileData();
+    userId = userProfileBox.get("userId", defaultValue: 1);
   }
 
   void loadProfileData() {
@@ -108,6 +112,12 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                   ),
                 ),
               ),
+              if (userId != null)...[
+                const SizedBox(height: 20),
+                Center(
+                  child: Text("User Id: ${userId.toString()}", style: TextStyle(color: Colors.black, fontSize: 20)),
+                )
+              ],
               const SizedBox(height: 45),
 
               // Name Field

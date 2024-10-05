@@ -41,23 +41,41 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
                 // Profile icon at the top left
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: IconButton(
-                    icon: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Icon(
-                        Icons.person_outline,
-                        size: 32,
-                        color: Colors.grey[700],
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min, // Use min to wrap the contents
+                    children: [
+                      IconButton(
+                        icon: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Icon(
+                            Icons.person_outline,
+                            size: 32,
+                            color: Colors.grey[700],
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => ViewProfilePage()),
+                          );
+                        },
                       ),
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ViewProfilePage()), // Make sure to import the ViewProfilePage
-                      );
-                    },
-                  )
+                      // Display the name if it's not null
+                      if (name != null) // Ensure `name` is defined in your context
+                        Padding(
+                          padding: const EdgeInsets.only(left: 0.0), // Add some space between icon and name
+                          child: Text(
+                            name!, // Use the variable that contains the name
+                            style: TextStyle(
+                              fontSize: 18, // You can adjust the font size as needed
+                              color: Colors.grey[700], // Match the color with the icon
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
+
                 SizedBox(height: 20),
                 // Center content
                 Expanded(
@@ -123,7 +141,7 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
         color: Colors.white,
         elevation: 10,
         child: Container(
-          height: 60,
+          height: 80, // Increased height of the bottom bar
           padding: EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
             color: Colors.grey[200], // Light grey color
@@ -137,7 +155,7 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
             children: [
               IconButton(
                 icon: Icon(Icons.receipt_long),
-                iconSize: 28,
+                iconSize: 32, // Adjusted icon size
                 color: Colors.grey[800],
                 onPressed: () {
                   // Navigate to ReceiptScreen
@@ -150,7 +168,7 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
               SizedBox(width: 48), // Space for the floating action button
               IconButton(
                 icon: Icon(Icons.favorite_border),
-                iconSize: 28,
+                iconSize: 32, // Adjusted icon size
                 color: Colors.grey[800],
                 onPressed: () {
                   // Navigate to FavouritesScreen
@@ -164,6 +182,7 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
           ),
         ),
       ),
+
     );
   }
 }
