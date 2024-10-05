@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 import boto3
 import json
 from dotenv import load_dotenv
@@ -106,7 +106,6 @@ def upload():
 @app.route("/user", methods=["POST"])
 def create_profile():
     if request.method == "POST" and request.content_type == "application/json":
-
         id = request.json["id"]
         age = request.json["age"]
         height = request.json["height"]
@@ -126,18 +125,48 @@ def create_profile():
                 "activity_level": {"S": str(activity_level)},
             },
         )
+        return jsonify(get_macros(id, age, height, weight, activity_level))
 
-    def get_macros(
-        id: int, age: int, height: int, weight: int, activity_level: str
-    ) -> dict:
-        macros = {  
-            "cals": None,
-            "protein": None,
-            "carbs": None,
-            "fats": None,
-        }
+def get_macros(
+    id: int, age: int, height: int, weight: int, activity_level: str
+) -> dict:
+    macros = {  
+        "cals": None,
+        "protein": None,
+        "carbs": None,
+        "fats": None,
+    }
+    macros['cals'] = calculate_calories(age, height, weight, activity_level) # calories
+    macros['protein'] = calculate_protein(weight) # kg
+    macros['carbs'] = calculate_carbs(macros['cals']) # g
+    macros['fats'] = calculate_fats(macros['cals']) # g
+    return macros
 
-        return macros
+def calculate_calories(age: int, height: int, weight: int, activity_level: str) -> int:
+    # Calculate BMR using Harris-Benedict equation
+    bmr_male = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age)
+    bmr_female = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age)
+    bmr = (bmr_male + bmr_female) / 2
+    activity_factors = {
+        "low": 1.2,
+        "medium": 1.375,
+        "high": 1.55,
+        "Very H": 1.725,
+    }
+    tdee = bmr * activity_factors[activity_level]
+    return int(tdee)
+
+def calculate_protein(weight: int) -> int:
+    # General recommendation: 1 gram of protein per kilogram of body weight
+    return weight
+
+def calculate_carbs(cals: int) -> int:
+    # 45-65% of total daily calories
+    return int(0.5 * cals)
+
+def calculate_fats(cals: int) -> int:
+    # 20-35% of total daily calories
+    return int(0.275 * cals)
 
 
 def generate_image(food_str: str):
