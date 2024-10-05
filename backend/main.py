@@ -45,10 +45,13 @@ dyanmodb = boto3.client(
 
 bucket_name = "cic-hackathon-24-ai-images"
 
+activity_levels = ["low", "medium", "high", "veryhigh"]
+
 
 @app.route("/")
 def hello_world():
     return "<p>Hello, World!</p>"
+
 
 # Receives image file and process with ocr
 # Extract food items and their respective information
@@ -84,7 +87,12 @@ def upload():
             "contentType": "application/json",
             "accept": "application/json",
             "body": json.dumps(
-                {"prompt": prompt, "max_gen_len": 2048, "temperature": 0.25, "top_p": 0.25}
+                {
+                    "prompt": prompt,
+                    "max_gen_len": 2048,
+                    "temperature": 0.25,
+                    "top_p": 0.25,
+                }
             ),
         }
 
@@ -93,32 +101,36 @@ def upload():
         generated_text = body["generation"]
         print(generated_text)
         return "<p>Upload complete</p>"
-    
+
+
 @app.route("/user", methods=["POST"])
 def create_profile():
-    if request.method == "POST":
-        id = request.args['id']
-        age = request.args['age']
-        height = request.args['height']
-        weight = request.args['weight']
-        activity_level = request.args['activity_level']
+    if request.method == "POST" and request.content_type == "application/json":
+
+        id = request.json["id"]
+        age = request.json["age"]
+        height = request.json["height"]
+        weight = request.json["weight"]
+        activity_level = request.json["activity_level"].replace(" ", "").lower()
+
+        if activity_level not in activity_levels:
+            return jsonify({"error": "Invalid activity level"}), 400
 
         dyanmodb.put_item(
             TableName="cic-hackathon-24",
             Item={
-                "id": {"N": id},
-                "age": {"N": age},
-                "height": {"N": height},
-                "weight": {"N": weight},
-                "activity_level": {"SS": activity_level},
+                "user": {"S": str(id)},
+                "age": {"S": str(age)},
+                "height": {"S": str(height)},
+                "weight": {"S": str(weight)},
+                "activity_level": {"S": str(activity_level)},
             },
         )
 
-    # Add to table in dynamodb
-    # get macros and return them
-
-    def get_macros(id: int, age: int, height: int, weight: int, activity_level: str) -> dict:
-        macros = {
+    def get_macros(
+        id: int, age: int, height: int, weight: int, activity_level: str
+    ) -> dict:
+        macros = {  
             "cals": None,
             "protein": None,
             "carbs": None,
@@ -126,7 +138,6 @@ def create_profile():
         }
 
         return macros
-
 
 
 def generate_image(food_str: str):
@@ -165,8 +176,6 @@ def generate_image(food_str: str):
     )
     return url
 
-
-print(generate_image("raw chicken"))
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
