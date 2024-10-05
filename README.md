@@ -5,11 +5,11 @@
 ```bash
  cd backend/receipt_ocr
 
-docker-compose up -d
+docker compose up -d
 
 curl -X 'POST' \
   'http://localhost:8000/ocr/' \
   -H 'accept: application/json' \
   -H 'Content-Type: multipart/form-data' \
-  -F 'file=@***YOURPATHGOESHERE***/CIC-HACKATHON-2024/backend/receipt_ocr/images/receipt.jpg;type=image/jpeg'
+  -F 'file=@/images/receipt.jpg;type=image/jpeg'
 ```
