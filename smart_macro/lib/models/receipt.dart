@@ -1,14 +1,12 @@
+import 'package:smart_macro/models/macro.dart';
+import 'package:smart_macro/models/pantry_item.dart';
+
 class Receipt {
   final String vendor;
   final String date;
-  final List<ReceiptItem> items;
+  final Macro macros;
+  final List<PantryItem> items;
 
-  Receipt({required this.vendor, required this.date, required this.items});
-}
 
-class ReceiptItem {
-  final String name;
-  final String quantity;
-
-  ReceiptItem({required this.name, required this.quantity});
+  Receipt({required this.vendor, required this.date, required this.macros, required this.items});
 }

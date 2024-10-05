@@ -1,6 +1,14 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:smart_macro/loading_screens/macro_loading.dart';
+import 'package:smart_macro/loading_screens/pantry_loading.dart';
+import 'package:smart_macro/loading_screens/receipt_loading.dart';
+import 'package:smart_macro/models/item_type.dart';
+import 'package:smart_macro/models/macro.dart';
+import 'package:smart_macro/models/pantry_item.dart';
+import 'package:smart_macro/models/receipt.dart';
 import 'package:smart_macro/screens/receipt_screen.dart';
 import 'package:smart_macro/screens/view_profile.dart';
 
@@ -21,11 +29,52 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
   }
 
   Future<void> _scanReceipt() async {
-    // final XFile? image = await _picker.pickImage(source: ImageSource.camera);
-    // if (image != null) {
-    //   // Process the image (e.g., display it on the screen or send it to a server for OCR)
-    //   print('Image path: ${image.path}');
-    // }
+    final XFile? xFile = await _picker.pickImage(source: ImageSource.camera);
+    
+    if (xFile != null) {
+      // Convert XFile to File
+      File imageFile = File(xFile.path);
+      
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => MacroLoadingPage(imageFile: imageFile)),
+      );
+    }
+  }
+
+  List<Receipt> _generateSampleReceipts() {
+    return [
+      Receipt(
+        vendor: 'Grocery Store A',
+        date: '2024-10-01',
+        macros: Macro(protein: 50, carbohydrates: 200, fats: 30),
+        items: [
+          PantryItem(name: 'Rice', type: ItemType.weight, quantity: 2, daysLeftToExpire: 365),
+          PantryItem(name: 'Milk', type: ItemType.liquid, quantity: 1, daysLeftToExpire: 7),
+          PantryItem(name: 'Apples', type: ItemType.countable, quantity: 5, daysLeftToExpire: 10),
+        ],
+      ),
+      Receipt(
+        vendor: 'Grocery Store B',
+        date: '2024-10-02',
+        macros: Macro(protein: 40, carbohydrates: 150, fats: 20),
+        items: [
+          PantryItem(name: 'Chicken Breast', type: ItemType.weight, quantity: 1, daysLeftToExpire: 5),
+          PantryItem(name: 'Olive Oil', type: ItemType.liquid, quantity: 0.5, daysLeftToExpire: 730),
+          PantryItem(name: 'Bananas', type: ItemType.countable, quantity: 6, daysLeftToExpire: 7),
+        ],
+      ),
+      Receipt(
+        vendor: 'Grocery Store C',
+        date: '2024-10-03',
+        macros: Macro(protein: 60, carbohydrates: 180, fats: 25),
+        items: [
+          PantryItem(name: 'Pasta', type: ItemType.weight, quantity: 1, daysLeftToExpire: 365),
+          PantryItem(name: 'Yogurt', type: ItemType.liquid, quantity: 2, daysLeftToExpire: 14),
+          PantryItem(name: 'Eggs', type: ItemType.countable, quantity: 12, daysLeftToExpire: 21),
+        ],
+      ),
+    ];
   }
 
   @override
@@ -40,7 +89,7 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
               children: [
                 // Profile icon at the top left
                 Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(10.0),
                   child: Row(
                     mainAxisSize: MainAxisSize.min, // Use min to wrap the contents
                     children: [
@@ -141,7 +190,7 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
         color: Colors.white,
         elevation: 10,
         child: Container(
-          height: 80, // Increased height of the bottom bar
+          height: 100, // Increased height of the bottom bar
           padding: EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
             color: Colors.grey[200], // Light grey color
@@ -158,31 +207,36 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
                 iconSize: 32, // Adjusted icon size
                 color: Colors.grey[800],
                 onPressed: () {
-                  // Navigate to ReceiptScreen
+                  // Navigate to ReceiptLoadingPage
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(builder: (context) => ReceiptLoadingPage()),
+                  // );
+
+
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ReceiptScreen()),
+                    MaterialPageRoute(builder: (context) => ReceiptScreen(receipts: _generateSampleReceipts(),)),
                   );
                 },
               ),
               SizedBox(width: 48), // Space for the floating action button
               IconButton(
-                icon: Icon(Icons.favorite_border),
+                icon: Icon(Icons.local_grocery_store),
                 iconSize: 32, // Adjusted icon size
                 color: Colors.grey[800],
                 onPressed: () {
-                  // Navigate to FavouritesScreen
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(builder: (context) => FavouritesScreen()),
-                  // );
+                  // Navigate to PantryLoadingPage
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => PantryLoadingPage()),
+                  );
                 },
               ),
             ],
           ),
         ),
       ),
-
     );
   }
 }
