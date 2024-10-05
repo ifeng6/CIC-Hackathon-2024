@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:math' as math;
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:http_parser/http_parser.dart'; // Import for MediaType
@@ -9,6 +10,12 @@ import 'package:http_parser/http_parser.dart'; // Import for MediaType
 const SERVER_URL = "http://34.219.112.199:5000";
 
 const OCR_URL = "http://34.219.112.199:8000/ocr/";
+
+int generateRandomId() {
+  final math.Random random = math.Random();
+  int Id = random.nextInt(900000) + 100000; // Generates a number between 100000 and 999999
+  return Id;
+}
 
 
 Future<Map<String, dynamic>> getProfileMacros(Map<String, dynamic> requestBody) async {
@@ -49,7 +56,7 @@ Future<Map<String, dynamic>> getProfileMacros(Map<String, dynamic> requestBody) 
 ///      500: Internal server error - an unexpected error occurred on the server
 ///      Throws error if the request cannot be sent
 ///
-Future<Map<String, dynamic>> sendOcrData(XFile image) async {
+Future<Map<String, dynamic>> sendOcrData(XFile image, String userId) async {
   try {
     // Create the JSON object
     final request = http.MultipartRequest(
@@ -64,6 +71,9 @@ Future<Map<String, dynamic>> sendOcrData(XFile image) async {
         contentType: MediaType('image', 'png'),
       ),
     );
+
+    request.fields['userId'] = userId; // Example field
+    request.fields['receiptId'] = generateRandomId().toString(); // Another example field
 
     final response = await http.Response.fromStream(await request.send());
   
@@ -131,3 +141,4 @@ Future<Map<String, dynamic>> getPantryFromAWS(Map<String, dynamic> requestBody) 
     rethrow;
   }
 }
+

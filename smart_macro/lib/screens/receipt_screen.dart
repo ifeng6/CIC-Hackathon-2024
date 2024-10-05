@@ -63,97 +63,100 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
       ),
       isScrollControlled: true, // Allow the modal to take up more height
       builder: (context) {
-        return Container(
-          height: MediaQuery.of(context).size.height * 0.75, // Set desired height
-          padding: const EdgeInsets.all(16.0),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Receipt Details',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  'Vendor: ${receipt.vendor}',
-                  style: TextStyle(fontSize: 18),
-                ),
-                Text(
-                  'Date: ${receipt.date}',
-                  style: TextStyle(fontSize: 18),
-                ),
-                SizedBox(height: 20),
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(), // Prevent scrolling conflict
-                  itemCount: receipt.items.length,
-                  itemBuilder: (context, index) {
-                    final item = receipt.items[index];
-                    String quantityWithUnit;
-
-                    // Add the appropriate prefix based on the item type
-                    switch (item.type) {
-                      case ItemType.countable:
-                        quantityWithUnit = '${item.quantity} pcs'; // Countable items
-                        break;
-                      case ItemType.liquid:
-                        quantityWithUnit = '${item.quantity} ml'; // Liquid items
-                        break;
-                      case ItemType.weight:
-                        quantityWithUnit = '${item.quantity} kg'; // Weight items
-                        break;
-                      default:
-                        quantityWithUnit = item.quantity.toString(); // Fallback
-                    }
-
-                    return ListTile(
-                      title: Text(item.name),
-                      subtitle: Text(quantityWithUnit),
-                    );
-                  },
-                ),
-                SizedBox(height: 20),
-                // Pie Chart of Macronutrients
-                Text(
-                  'Macronutrient Breakdown',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 10),
-                AspectRatio(
-                  aspectRatio: 1,
-                  child: PieChart(
-                    PieChartData(
-                      sections: [
-                        PieChartSectionData(
-                          value: receipt.macros.protein.toDouble(),
-                          color: Colors.blue,
-                          title: '${receipt.macros.protein}g',
-                          radius: 60,
-                        ),
-                        PieChartSectionData(
-                          value: receipt.macros.carbohydrates.toDouble(),
-                          color: Colors.green,
-                          title: '${receipt.macros.carbohydrates}g',
-                          radius: 60,
-                        ),
-                        PieChartSectionData(
-                          value: receipt.macros.fats.toDouble(),
-                          color: Colors.orange,
-                          title: '${receipt.macros.fats}g',
-                          radius: 60,
-                        ),
-                      ],
+        return Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: Container(
+            height: MediaQuery.of(context).size.height * 0.75, // Set desired height
+            padding: const EdgeInsets.all(16.0),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Receipt Details',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
-                SizedBox(height: 20),
-                // Color Legend
-                _buildColorLegend(),
-              ],
+                  SizedBox(height: 10),
+                  Text(
+                    'Vendor: ${receipt.vendor}',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  Text(
+                    'Date: ${receipt.date}',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  SizedBox(height: 20),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(), // Prevent scrolling conflict
+                    itemCount: receipt.items.length,
+                    itemBuilder: (context, index) {
+                      final item = receipt.items[index];
+                      String quantityWithUnit;
+          
+                      // Add the appropriate prefix based on the item type
+                      switch (item.type) {
+                        case ItemType.countable:
+                          quantityWithUnit = '${item.quantity} pcs'; // Countable items
+                          break;
+                        case ItemType.liquid:
+                          quantityWithUnit = '${item.quantity} ml'; // Liquid items
+                          break;
+                        case ItemType.weight:
+                          quantityWithUnit = '${item.quantity} kg'; // Weight items
+                          break;
+                        default:
+                          quantityWithUnit = item.quantity.toString(); // Fallback
+                      }
+          
+                      return ListTile(
+                        title: Text(item.name),
+                        subtitle: Text(quantityWithUnit),
+                      );
+                    },
+                  ),
+                  SizedBox(height: 20),
+                  // Pie Chart of Macronutrients
+                  Text(
+                    'Macronutrient Breakdown',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+                  AspectRatio(
+                    aspectRatio: 1,
+                    child: PieChart(
+                      PieChartData(
+                        sections: [
+                          PieChartSectionData(
+                            value: receipt.macros.protein.toDouble(),
+                            color: Colors.blue,
+                            title: '${receipt.macros.protein}g',
+                            radius: 60,
+                          ),
+                          PieChartSectionData(
+                            value: receipt.macros.carbohydrates.toDouble(),
+                            color: Colors.green,
+                            title: '${receipt.macros.carbohydrates}g',
+                            radius: 60,
+                          ),
+                          PieChartSectionData(
+                            value: receipt.macros.fats.toDouble(),
+                            color: Colors.orange,
+                            title: '${receipt.macros.fats}g',
+                            radius: 60,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  // Color Legend
+                  _buildColorLegend(),
+                ],
+              ),
             ),
           ),
         );

@@ -35,7 +35,7 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
            selectedActivityLevel != null; // Ensure activity level is selected
   }
 
-  int generateRandomUserId() {
+  int generateRandomId() {
     final Random random = Random();
     int userId = random.nextInt(900000) + 100000; // Generates a number between 100000 and 999999
     return userId;
@@ -44,7 +44,7 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
 
   void onPressed() {
       var userProfile = Hive.box("userProfile");
-      int userId = generateRandomUserId();
+      int userId = generateRandomId();
       userProfile.put("userId", userId);
       userProfile.put("name", nameController.text);
       userProfile.put("age", int.parse(ageController.text));

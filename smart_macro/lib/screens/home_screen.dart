@@ -48,7 +48,7 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
     }
   }
 
-    List<Receipt> _generateSampleReceipts() {
+  List<Receipt> _generateSampleReceipts() {
     return [
       Receipt(
         vendor: 'Grocery Store A',
@@ -153,27 +153,23 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         actions: [
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                icon: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Icon(
-                    Icons.person_outline,
-                    size: 32,
-                    color: Colors.grey[700],
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ViewProfilePage()),
-                  );
-                },
+          IconButton(
+            icon: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Icon(
+                Icons.person_outline,
+                size: 32,
+                color: Colors.grey[700],
               ),
-            ],
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ViewProfilePage()),
+              );
+            },
           ),
         ],
       ),
@@ -181,8 +177,13 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            Image.asset(
+              'assets/smart.png', // Adjust the path to your image
+              height: 100, // Adjust height as necessary
+            ),
+            const SizedBox(height: 10),
             Padding(
-              padding: const EdgeInsets.all(10.0),
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -242,7 +243,7 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
             Expanded(
               child: Center(
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                   decoration: BoxDecoration(
                     color: Colors.grey[200],
                     borderRadius: BorderRadius.circular(30),
@@ -262,11 +263,7 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 20),
-
-                      // Add color legend here
-                      _buildColorLegend(),
-                      SizedBox(height: 20),
+                      SizedBox(height: 10),
 
                       Text(
                         '${calories?.toInt() ?? 0} Calories',
@@ -276,6 +273,7 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
                           color: Colors.blueGrey[800],
                         ),
                       ),
+                      _buildColorLegend(),
                     ],
                   ),
                 ),
@@ -287,8 +285,8 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         onPressed: _scanReceipt,
-        child: Icon(Icons.camera_alt),
-        backgroundColor: Colors.blue,
+        child: Icon(Icons.camera_alt_outlined, color: Colors.white, size: 35),
+        backgroundColor: Colors.green[200],
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),

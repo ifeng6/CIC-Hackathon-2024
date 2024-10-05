@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:convert'; // Import for Base64 encoding
 import 'package:image/image.dart' as img;
@@ -14,6 +15,8 @@ class MacroLoadingPage extends StatefulWidget {
 }
 
 class _MacroLoadingPageState extends State<MacroLoadingPage> {
+  var userProfileBox = Hive.box('userProfile');
+
   @override
   void initState() {
     super.initState();
@@ -33,7 +36,7 @@ class _MacroLoadingPageState extends State<MacroLoadingPage> {
     // print("Base64 Length: ${base64String.length}");
 
     // Optionally, send the Base64 string to the OCR server
-    Map<String, dynamic> response = await sendOcrData(widget.xFile);
+    Map<String, dynamic> response = await sendOcrData(widget.xFile, userProfileBox.get("userId", defaultValue: 111111).toString());
     print("SENT");
   }
 
