@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive/hive.dart';
 import 'package:smart_macro/models/activity_level.dart';
+import 'package:smart_macro/screens/home_screen.dart';
 import 'package:smart_macro/utils/http_utils.dart';
 
 
@@ -49,12 +50,22 @@ class _ProfileLoadingScreenState extends State<ProfileLoadingScreen> {
 
       print(response);
 
+      double calories = response['calories'];
+      double protein = response['protein'];
+      double fats = response['fat'];
+      double carbs = response['carbs'];
+
+      // Add the stuff in the hive box
+      userProfileBox.put("calories", calories);
+      userProfileBox.put("protein", protein);
+      userProfileBox.put("fats", fats);
+      userProfileBox.put("carbs", carbs);
+
       // Assuming you receive a response and need to navigate to the next page
-      // For example:
-      // Navigator.pushReplacement(
-      //   context,
-      //   MaterialPageRoute(builder: (context) => NextScreen()),
-      // );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => ReceiptScannerPage()),
+      );
 
     } catch (error) {
       print("Error sending profile data: $error");
