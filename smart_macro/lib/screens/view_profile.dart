@@ -237,5 +237,4 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
       ],
     );
   }
-
 }
