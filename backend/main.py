@@ -234,16 +234,16 @@ def calculate_fats(cals: int) -> int:
 
 # Return true if the receipt is successfully added to the database
 def add_receipt_to_db(
-    receipt_id: int, user_id: int, items: list, macros: list, cost: int
+    receipt_id: int, user_id: int, items: list, macros: object, cost: int
 ) -> bool:
     try:
         dyanmodb.put_item(
-            TableName="recipts",
+            TableName="receipts",
             Item={
                 "receipts": {"S": str(receipt_id)},
                 "user": {"S": str(user_id)},
                 "items": {"L": items},
-                "macros": {"L": macros},
+                "macros": {"M": macros},
                 "cost": {"S": str(cost)},
             },
         )
