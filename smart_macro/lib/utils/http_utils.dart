@@ -1,11 +1,14 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
+import 'package:http_parser/http_parser.dart'; // Import for MediaType
+
 
 /** IP address of the OCR service */
 const SERVER_URL = "http://34.219.112.199:5000";
 
-const OCR_URL = "http://206.87.194.232:8000/ocr";
+const OCR_URL = "http://34.219.112.199:8000/ocr/";
 
 
 Future<Map<String, dynamic>> getProfileMacros(Map<String, dynamic> requestBody) async {
@@ -46,27 +49,39 @@ Future<Map<String, dynamic>> getProfileMacros(Map<String, dynamic> requestBody) 
 ///      500: Internal server error - an unexpected error occurred on the server
 ///      Throws error if the request cannot be sent
 ///
-Future<Map<String, dynamic>> sendOcrData(List<int> imageBytes) async {
+Future<Map<String, dynamic>> sendOcrData(XFile image) async {
   try {
-    var request = http.MultipartRequest('POST', Uri.parse(OCR_URL));
-    request.files.add(http.MultipartFile.fromBytes(
-      'image',
-      imageBytes,
-      filename: 'receipt.jpg',
-    ));
-    final response = await request.send();
-    final responseBody = await response.stream.bytesToString();
+    // Create the JSON object
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse(OCR_URL),
+    );
+
+    request.files.add(
+      await http.MultipartFile.fromPath(
+        'file',
+        image.path,
+        contentType: MediaType('image', 'png'),
+      ),
+    );
+
+    final response = await http.Response.fromStream(await request.send());
+  
+    log("Received");
+    // Handle the response
     if (response.statusCode == 200) {
-      log("Server response: $responseBody");
-      return json.decode(responseBody);
+      log("Server response: ${response.body}");
+      return json.decode(response.body);
     } else {
-      log("Error: ${response.statusCode} : $responseBody");
+      log("Error: ${response.statusCode} : ${response.body}");
       throw Exception("Failed to send image");
     }
   } catch (error) {
+    log("ERROR: $error");
     rethrow;
   }
 }
+
 
 
 

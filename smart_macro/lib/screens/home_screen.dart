@@ -43,7 +43,7 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
       File imageFile = File(xFile.path);
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => MacroLoadingPage(imageFile: imageFile)),
+        MaterialPageRoute(builder: (context) => MacroLoadingPage(xFile: xFile)),
       );
     }
   }
