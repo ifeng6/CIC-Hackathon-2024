@@ -35,7 +35,6 @@ def main():
         0,
     )
     edged = cv2.Canny(blurred, 75, 200)
-    # cv2.imwrite("edged.jpg", edged)
 
     # find contours in the edge map and sort them by size in descending order
     contours = cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -76,7 +75,6 @@ def main():
     print("========================")
     print(text)
     print("\n")
-
 
 if __name__ == "__main__":
     main()
