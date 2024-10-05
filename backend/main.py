@@ -51,14 +51,14 @@ def upload():
         input = request.json.get("input")
 
         system_prompt = """
-            You are given an ocr output from a grocery store receipt that includes food items and non-food items. 
-            Filter the items given to include food items and only food items. A food item is defined as something that can be eaten or drank by humans. For example bread, drinks, and desserts can be considered as items to include.
-            Do not include words that aren't English words.
-            For each food item, output a valid JSON object where the key is the name of the item and the value is an object containing the quantity and cost.
-            Do not include non-food items. Output only the JSON and make sure the JSON is valid syntax. No additional text.
+            You are given a text scan of a grocery store receipt that includes food items and non-food items.
+            Filter the items to ONLY include food items. A food item is defined as something that is normally eaten or drank by humans.
+            For each food item, output a valid JSON object where the key is the name of the food item and the value is an object containing the quantity and cost.
+            Some items have a weight instead of quantity.
+            Output only the JSON and make sure the JSON is valid syntax. No additional text. Do not include items that are not on the receipt.
         """
 
-        receipt = '["OS","ity # 12783","W 4th Ave, Vancouver, BC V6K 1N9","Apples @ 21bs 4.72 E","Bluetooth Speaker 179.99","Cookies 9.99","Popcorn 8.99","Ketchup 5.5","Laundry detergent 14.99","Peanut Butter 6.79","Salmon @ 71bs 84.99","Garlic 84.99","Olive 0i1 13.99","Broccoli @ 21bs 10.90","Amazon T-Shirt 59.71","Grapes @ 91bs 9","Milk @ 4L 8.99","eat 307551 APP: = jz8R","ran ID#: 7979661264","erchant ID: 768273","OVS SSC«STBL AT","yausyeaies 12:33:32 1206 206 256 206","U8Z3ZU881549831 /UUU0"]'
+        receipt = "City # 12783\n2285 W 4th Ave, Vancouver, BC V6K 1N9\nB7 Member 832547236\nE 3577445 Apples 4.72 E\n0623616 Bluetooth Speaker 179.99\n1826395 Cookies 9.99\n6315178 Bananas @ 3lbs 8.99\n9144381 Ketchup 5.5\n1929371 Laundry detergent 14.99\n1553553 Peanut Butter 6.79\n7963654 Salmon @ 71bs 84.99\n0052418 Bread 6.79\n0902672 Olives 13.99\n4872088 Broccoli 10.90\n0882442 Pasta 8.71\n4238639 Rice 28.90\n2546682 Milk @ 4L 8.99\n0083199 Amazon T-Shirt 25.99\n2864182 Chicken @ 6lbs 22.30\nSUBTOTAL 442.53\nTAX 64.93\neee TOTAL HWE\nXXXXXXXXXXXX CHIP Read\nAID: — 261X1Fp5vpMm\nSegt 307551 APH: + jz8R\nVISA Resp:_ APPROVED\nTran D8: 7979661264\nMerchant ID: 768273\nAPPROVED - Purchase\nAMOUNT : 507.46\n10/05/2024 12:33:32 1206 206 256 206\n“OO VISA «SOT\nCHANGE 0.00\nTAX 64.93\nTOTAL TAX 64.93\nTOTAL NUMBER OF ITEMS SOLD = 16\ndanse 12:33:32 1206 206 256 206\n208232088 1249831 /UUU0\nOP: 206 NAME: SCO LANE #206\nThank You.\nPlease Come Again\nWhse: 1206 Trm: 206 Trn: 256 OP: 206\nItems Sold : 16\nB7 10/05/2024 12:33:32\n\f"
 
         prompt = f"""
             <|begin_of_text|>
@@ -76,14 +76,45 @@ def upload():
             "contentType": "application/json",
             "accept": "application/json",
             "body": json.dumps(
-                {"prompt": prompt, "max_gen_len": 2048, "temperature": 0.25, "top_p": 0.25}
+                {"prompt": prompt, "max_gen_len": 1024, "temperature": 0.15, "top_p": 0.2}
             ),
         }
 
         response = bedrock_runtime.invoke_model(**kwargs)
         body = json.loads(response["body"].read())
         generated_text = body["generation"]
-        print(generated_text)
+
+        system_prompt_nutrient = """
+            You are a helpful AI assistant who is knowledgable in food nutrition. Given a list of food items formatted as a JSON and their respective quantities,
+            output a JSON object that includes the name of the food as well as their nutrients in amount. You can ignore items that have no nutrition or aren't foods.
+            Only output the JSON and no additional text.
+        """
+
+        prompt_nutrient = f"""
+            <|begin_of_text|>
+            <|start_header_id|>system<|end_header_id|>
+            {system_prompt_nutrient}
+            <|eot_id|>
+            <|start_header_id|>receipt<|end_header_id|>
+            {generated_text}
+            <|eot_id|>
+            <|start_header_id|>assistant<|end_header_id|>
+        """
+
+        kwargs_nutrient = {
+            "modelId": "us.meta.llama3-2-1b-instruct-v1:0",
+            "contentType": "application/json",
+            "accept": "application/json",
+            "body": json.dumps(
+                {"prompt": prompt_nutrient, "max_gen_len": 1024, "temperature": 0.15, "top_p": 0.2}
+            ),
+        }
+
+        nutrient_response = bedrock_runtime.invoke_model(**kwargs_nutrient)
+        body = json.loads(nutrient_response["body"].read())
+        nutrient_information = body["generation"]
+        print(nutrient_information)
+
         return "<p>Upload complete</p>"
 
 
@@ -123,8 +154,6 @@ def generate_image(food_str: str):
     )
     return url
 
-
-print(generate_image("raw chicken"))
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
