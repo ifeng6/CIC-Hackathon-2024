@@ -194,16 +194,34 @@ def calculate_fats(cals: int) -> int:
     # 20-35% of total daily calories
     return int(0.275 * cals)
 
-def add_receipt_to_db(receipt_id: int, user_id: int, items: str, cost: int):
-    dyanmodb.put_item(
-        TableName="recipts",
-        Item={
-            "receipt": {"S": str(receipt_id)},
-            "user": {"S": str(user_id)},
-            "items": {"S": items},
-            "cost": {"S": str(cost)},
-        },
-    )
+def add_receipt_to_db(receipt_id: int, user_id: int, items: list, macros: list, cost: int) -> bool:
+    try:
+        dyanmodb.put_item(
+            TableName="recipts",
+            Item={
+                "receipts": {"S": str(receipt_id)},
+                "user": {"S": str(user_id)},
+                "items": {"L": items},
+                "macros": {"L": macros},
+                "cost": {"S": str(cost)},
+            },
+        )
+        return True
+    except Exception as e:
+        print(e)
+        return False
+    
+@app.route("/get_receipt", methods=["GET"])
+def get_receipt():
+    if request.method == "GET":
+        response = dyanmodb.scan(TableName="receipts")
+
+        items = response.get("Items", [])
+        for item in items:
+            item.pop('receipts', None)
+            item.pop('user', None)
+        return jsonify(items)
+
 
 def generate_image(food_str: str):
     food_str = food_str.lower().replace(" ", "")
