@@ -19,8 +19,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var userProfileBox = Hive.box('userProfile');
-    // bool hasProfile = userProfileBox.get("hasProfile", defaultValue: false);
-    bool hasProfile = false;
+    bool hasProfile = userProfileBox.get("hasProfile", defaultValue: false);
+    // bool hasProfile = false;
 
     return MaterialApp(
       title: 'Receipt App',

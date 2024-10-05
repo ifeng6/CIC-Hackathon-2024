@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:smart_macro/screens/receipt_screen.dart';
+import 'package:smart_macro/screens/view_profile.dart';
 
 class ReceiptScannerPage extends StatefulWidget {
   @override
@@ -9,6 +11,14 @@ class ReceiptScannerPage extends StatefulWidget {
 
 class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
   final ImagePicker _picker = ImagePicker();
+  var userProfileBox = Hive.box('userProfile');
+  String? name;
+
+  @override
+  void initState() {
+    super.initState();
+    name = userProfileBox.get("name", defaultValue: null);
+  }
 
   Future<void> _scanReceipt() async {
     // final XFile? image = await _picker.pickImage(source: ImageSource.camera);
@@ -31,11 +41,22 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
                 // Profile icon at the top left
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Icon(
-                    Icons.person_outline,
-                    size: 32,
-                    color: Colors.grey[700],
-                  ),
+                  child: IconButton(
+                    icon: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Icon(
+                        Icons.person_outline,
+                        size: 32,
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ViewProfilePage()), // Make sure to import the ViewProfilePage
+                      );
+                    },
+                  )
                 ),
                 SizedBox(height: 20),
                 // Center content
