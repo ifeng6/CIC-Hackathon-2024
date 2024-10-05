@@ -159,6 +159,7 @@ def upload():
         
         items = []
         macros = defaultdict(int)
+        cost = 0
         for name, fields in all_items.items():
             curr = {}
             curr["name"] = name
@@ -171,7 +172,10 @@ def upload():
             for macro_name, macro_value in fields.get("nutrients").items():
                 macros[macro_name] += macro_value
 
-        # add_items_to_db(items=items)
+            cost += fields.get("cost")
+
+        add_receipt_to_db(receipt_id=receiptId, user_id=userId, items=items, macros=macros, cost=cost)
+        add_items_to_db(user_id=userId, items=items)
 
         return {"items": items, "macros": macros}
 
