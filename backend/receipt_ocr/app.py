@@ -8,7 +8,7 @@ app = FastAPI()
 
 @app.get("/")
 async def root():
-    return {"message": "ocr_api"}
+    return {"message": "ocr_api"}   
 
 @app.post("/ocr/")
 async def ocr_receipt(file: UploadFile):
