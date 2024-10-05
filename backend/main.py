@@ -87,7 +87,12 @@ def upload():
             "contentType": "application/json",
             "accept": "application/json",
             "body": json.dumps(
-                {"prompt": prompt, "max_gen_len": 1024, "temperature": 0.15, "top_p": 0.2}
+                {
+                    "prompt": prompt,
+                    "max_gen_len": 1024,
+                    "temperature": 0.15,
+                    "top_p": 0.2,
+                }
             ),
         }
 
@@ -117,7 +122,12 @@ def upload():
             "contentType": "application/json",
             "accept": "application/json",
             "body": json.dumps(
-                {"prompt": prompt_nutrient, "max_gen_len": 1024, "temperature": 0.15, "top_p": 0.2}
+                {
+                    "prompt": prompt_nutrient,
+                    "max_gen_len": 1024,
+                    "temperature": 0.15,
+                    "top_p": 0.2,
+                }
             ),
         }
 
@@ -153,20 +163,22 @@ def create_profile():
         )
         return jsonify(get_macros(id, age, height, weight, activity_level))
 
+
 def get_macros(
     id: int, age: int, height: int, weight: int, activity_level: str
 ) -> dict:
-    macros = {  
+    macros = {
         "cals": None,
         "protein": None,
         "carbs": None,
         "fats": None,
     }
-    macros['cals'] = calculate_calories(age, height, weight, activity_level) # calories
-    macros['protein'] = calculate_protein(weight) # kg
-    macros['carbs'] = calculate_carbs(macros['cals']) # g
-    macros['fats'] = calculate_fats(macros['cals']) # g
+    macros["cals"] = calculate_calories(age, height, weight, activity_level)  # calories
+    macros["protein"] = calculate_protein(weight)  # kg
+    macros["carbs"] = calculate_carbs(macros["cals"])  # g
+    macros["fats"] = calculate_fats(macros["cals"])  # g
     return macros
+
 
 def calculate_calories(age: int, height: int, weight: int, activity_level: str) -> int:
     # Calculate BMR using Harris-Benedict equation
@@ -177,25 +189,31 @@ def calculate_calories(age: int, height: int, weight: int, activity_level: str) 
         "low": 1.2,
         "medium": 1.375,
         "high": 1.55,
-        "Very H": 1.725,
+        "veryhigh": 1.725,
     }
     tdee = bmr * activity_factors[activity_level]
     return int(tdee)
+
 
 def calculate_protein(weight: int) -> int:
     # General recommendation: 1 gram of protein per kilogram of body weight
     return weight
 
+
 def calculate_carbs(cals: int) -> int:
     # 45-65% of total daily calories
     return int(0.5 * cals)
+
 
 def calculate_fats(cals: int) -> int:
     # 20-35% of total daily calories
     return int(0.275 * cals)
 
+
 # Return true if the receipt is successfully added to the database
-def add_receipt_to_db(receipt_id: int, user_id: int, items: list, macros: list, cost: int) -> bool:
+def add_receipt_to_db(
+    receipt_id: int, user_id: int, items: list, macros: list, cost: int
+) -> bool:
     try:
         dyanmodb.put_item(
             TableName="recipts",
@@ -211,7 +229,8 @@ def add_receipt_to_db(receipt_id: int, user_id: int, items: list, macros: list, 
     except Exception as e:
         print(e)
         return False
-    
+
+
 # Return true if the receipt is successfully added to the database
 def add_items_to_db(user_id: int, items: list) -> bool:
     try:
@@ -223,13 +242,14 @@ def add_items_to_db(user_id: int, items: list) -> bool:
                     "name": {"S": item["name"]},
                     "quantity": {"S": item["quantity"]},
                     "days_left": {"S": item["days_left"]},
-                }
+                },
             )
         return True
     except Exception as e:
         print(e)
         return False
-    
+
+
 @app.route("/get_receipt", methods=["GET"])
 def get_receipt():
     if request.method == "GET":
@@ -237,9 +257,10 @@ def get_receipt():
 
         items = response.get("Items", [])
         for item in items:
-            item.pop('receipts', None)
-            item.pop('user', None)
+            item.pop("receipts", None)
+            item.pop("user", None)
         return jsonify(items)
+
 
 def generate_image(food_str: str):
     food_str = food_str.lower().replace(" ", "")
