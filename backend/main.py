@@ -240,6 +240,16 @@ def get_receipt():
             item.pop('receipts', None)
             item.pop('user', None)
         return jsonify(items)
+    
+@app.route("/get_items", methods=["GET"])
+def get_items():
+    if request.method == "GET":
+        response = dyanmodb.scan(TableName="items")
+
+        items = response.get("Items", [])
+        for item in items:
+            item.pop('items', None)
+        return jsonify(items)
 
 def generate_image(food_str: str):
     food_str = food_str.lower().replace(" ", "")
