@@ -14,14 +14,10 @@ async def root():
 
 @app.post("/ocr/")
 async def ocr_receipt(file: UploadFile):
+    print(file)
     if file.content_type.startswith("image"):
         image_data = await file.read()
         image_data_array = np.frombuffer(image_data, np.uint8)
-        
-        # Save the image to the images folder
-        image_path = os.path.join(IMAGES_FOLDER, file.filename)
-        with open(image_path, "wb") as image_file:
-            image_file.write(image_data)
         
         recognized_text = perform_ocr(image_data_array)
         # cleaned_data = cleanText(recognized_text)
