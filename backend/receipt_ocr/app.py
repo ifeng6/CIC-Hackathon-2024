@@ -24,9 +24,9 @@ async def ocr_receipt(file: UploadFile):
             image_file.write(image_data)
         
         recognized_text = perform_ocr(image_data_array)
-        cleaned_data = cleanText(recognized_text)
-        return JSONResponse(content=cleaned_data, status_code=200)
-    else:
+        # cleaned_data = cleanText(recognized_text)
+        return JSONResponse(content=recognized_text, status_code=200)
+    else: 
         return {"error": "the uploaded file is not an image"}
 
 def cleanText(text):
