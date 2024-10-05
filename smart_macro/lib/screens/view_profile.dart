@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:smart_macro/components/text_field.dart';
+import 'package:smart_macro/loading_screens/profile_loading.dart';
 import 'package:smart_macro/models/activity_level.dart';
 
 class ViewProfilePage extends StatefulWidget {
@@ -84,9 +85,26 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
       appBar: AppBar(
         title: const Text('User Profile'),
         centerTitle: true,
-        automaticallyImplyLeading: true,
+        automaticallyImplyLeading: false, // Disable the default back button
         backgroundColor: Colors.white,
         elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black), // Customize the icon
+          onPressed: () {
+            // Navigate to the desired page instead of going back
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => 
+              ProfileLoadingScreen(
+                userId: userProfileBox.get("userId"),
+                height: userProfileBox.get("height"),
+                age: userProfileBox.get("age"),
+                weight: userProfileBox.get("weight"),
+                activityLevel: stringToActivityLevel(userProfileBox.get("activitylevel"))
+              )), // Replace with your target page
+            );
+          },
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(30.0),

@@ -40,20 +40,18 @@ class _ProfileLoadingScreenState extends State<ProfileLoadingScreen> {
       int userId = userProfileBox.get("userId", defaultValue: 1);
       Map<String, dynamic> response = await getProfileMacros(
         <String, dynamic>{
-          "userId": widget.userId,
+          "id": widget.userId,
           "height": widget.height,
           "age": widget.age,
           "weight": widget.weight,
-          "activitylevel": activityLevelToString(widget.activityLevel)
+          "activity_level": activityLevelToString(widget.activityLevel)
         }
       );  
 
-      print(response);
-
-      double calories = response['calories'];
-      double protein = response['protein'];
-      double fats = response['fat'];
-      double carbs = response['carbs'];
+      double calories = response['cals'].toDouble();
+      double protein = response['protein'].toDouble();
+      double fats = response['fats'].toDouble();
+      double carbs = response['carbs'].toDouble();
 
       // Add the stuff in the hive box
       userProfileBox.put("calories", calories);
@@ -66,7 +64,6 @@ class _ProfileLoadingScreenState extends State<ProfileLoadingScreen> {
         context,
         MaterialPageRoute(builder: (context) => ReceiptScannerPage()),
       );
-
     } catch (error) {
       print("Error sending profile data: $error");
       // Optionally handle the error
