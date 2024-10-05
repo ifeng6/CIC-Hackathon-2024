@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from flask_cors import CORS
 import os
 import base64
+from collections import defaultdict
 import requests
 
 load_dotenv()
@@ -77,14 +78,13 @@ def upload():
         print(response.text)
 
         system_prompt = """
-            You are given a text scan of a grocery store receipt that includes food items and non-food items.
-            Filter the items to ONLY include food items. A food item is defined as something that is normally eaten or drank by humans.
+            You are a helpful AI assistant who is an expert in identifying whether or not an item is food. You are given a text scan of an entire grocery store receipt that includes food items and non-food items.
+            Filter the items to ONLY include food items which are items that can be eaten or drank by humans.
             For each food item, output a valid JSON object where the key is the name of the food item and the value is an object containing the quantity and cost.
-            Some items have a weight instead of quantity.
             Output only the JSON and make sure the JSON is valid syntax. No additional text. Do not include items that are not on the receipt.
         """
 
-        receipt = "City # 12783\n2285 W 4th Ave, Vancouver, BC V6K 1N9\nB7 Member 832547236\nE 3577445 Apples 4.72 E\n0623616 Bluetooth Speaker 179.99\n1826395 Cookies 9.99\n6315178 Bananas @ 3lbs 8.99\n9144381 Ketchup 5.5\n1929371 Laundry detergent 14.99\n1553553 Peanut Butter 6.79\n7963654 Salmon @ 71bs 84.99\n0052418 Bread 6.79\n0902672 Olives 13.99\n4872088 Broccoli 10.90\n0882442 Pasta 8.71\n4238639 Rice 28.90\n2546682 Milk @ 4L 8.99\n0083199 Amazon T-Shirt 25.99\n2864182 Chicken @ 6lbs 22.30\nSUBTOTAL 442.53\nTAX 64.93\neee TOTAL HWE\nXXXXXXXXXXXX CHIP Read\nAID: — 261X1Fp5vpMm\nSegt 307551 APH: + jz8R\nVISA Resp:_ APPROVED\nTran D8: 7979661264\nMerchant ID: 768273\nAPPROVED - Purchase\nAMOUNT : 507.46\n10/05/2024 12:33:32 1206 206 256 206\n“OO VISA «SOT\nCHANGE 0.00\nTAX 64.93\nTOTAL TAX 64.93\nTOTAL NUMBER OF ITEMS SOLD = 16\ndanse 12:33:32 1206 206 256 206\n208232088 1249831 /UUU0\nOP: 206 NAME: SCO LANE #206\nThank You.\nPlease Come Again\nWhse: 1206 Trm: 206 Trn: 256 OP: 206\nItems Sold : 16\nB7 10/05/2024 12:33:32\n\f"
+        receipt = "/ OS\nCity # 12783\n2285 W 4th Ave, Vancouver, BC V6K 1N9\nB7 Member 832547236\nE 3577445 Apples @ 2 4.72 E\n0623616 Bluetooth Speaker @ 1 179.99\n1826395 Cookies 9.99\n6315178 Bananas @ 3 8.99\n9144381 Ketchup 5.5\n1929371 Detergent 14.99\n1553553 Peanut Butter @ 1 6.79\n7963654 Salmon @ 7 84.99\n0052418 Pasta @ 1 84.99\n0902672 Olives @ 10 13.99\n4872088 Broccoli @ 2 10.90\n0882442 Television 559.71\n4238639 Grapes @ 91bs 9\n2546682 Milk @ 4 8.99\n0083199 0.00\nSUBTOTAL 503.54\nTAX 12.93\neee TOTAL HY\nXXXXXXXXKKXX CHIP Read\nAID: 261X1FpSvpMm\nSeat 307551 APP: = jz8R\nVISA Resp: APPROVED\nTran ID#: 7979661264\nMerchant ID: 768273\nAPPROVED - Purchase\nAMOUNT : 516.47\n10/05/2024 12:33:32 1206 206 256 206\n“OVS SSC«STBL AT\nCHANGE 0.00\nTAX 12.93\nTOTAL TAX 12.93\nTOTAL NUMBER OF ITEMS SOLD= 15\nWyausyeaies 12:33:32 1206 206 256 206\n2U8Z3ZU881549831 /UUU0\nOP: 206 NAME: SCO LANE #206\nThank You.\nPlease Come Again\nWhse: 1206 Trm: 206 Trn: 256 OP: 206\nItems Sold : 15\nB7 10/05/2024 12:33:32\n\f"
 
         prompt = f"""
             <|begin_of_text|>
@@ -102,12 +102,7 @@ def upload():
             "contentType": "application/json",
             "accept": "application/json",
             "body": json.dumps(
-                {
-                    "prompt": prompt,
-                    "max_gen_len": 1024,
-                    "temperature": 0.15,
-                    "top_p": 0.2,
-                }
+                {"prompt": prompt, "max_gen_len": 1024, "temperature": 0.0, "top_p": 0.2}
             ),
         }
 
@@ -116,9 +111,25 @@ def upload():
         generated_text = body["generation"]
 
         system_prompt_nutrient = """
-            You are a helpful AI assistant who is knowledgable in food nutrition. Given a list of food items formatted as a JSON and their respective quantities,
-            output a JSON object that includes the name of the food as well as their nutrients in amount. You can ignore items that have no nutrition or aren't foods.
-            Only output the JSON and no additional text.
+            You are a helpful AI assistant who is knowledgable in food nutrition. Given a list of food items formatted as a JSON,
+            output a JSON object that includes the nutrients including protein, fats, carbohydrates, and calories in amounts.
+            Also include the quantity of the item and also predict the number of days until the food item expires. Do not include items that are not considered as food.
+            Only output the JSON and no additional text. It is vital that the JSON syntax is valid and correct.
+
+            Here is an example of how each object must be formatted:
+            {
+            "name": {
+                "quantity":
+                "cost":
+                "days_left":
+                "nutrients": {
+                    "protein":
+                    "fats":
+                    "carbohydrates":
+                    "calories":
+                    }
+                }
+            }
         """
 
         prompt_nutrient = f"""
@@ -137,21 +148,32 @@ def upload():
             "contentType": "application/json",
             "accept": "application/json",
             "body": json.dumps(
-                {
-                    "prompt": prompt_nutrient,
-                    "max_gen_len": 1024,
-                    "temperature": 0.15,
-                    "top_p": 0.2,
-                }
+                {"prompt": prompt_nutrient, "max_gen_len": 2048, "temperature": 0.0, "top_p": 0.2}
             ),
         }
 
         nutrient_response = bedrock_runtime.invoke_model(**kwargs_nutrient)
         body = json.loads(nutrient_response["body"].read())
         nutrient_information = body["generation"]
-        print(nutrient_information)
+        all_items = json.loads(nutrient_information)
+        
+        items = []
+        macros = defaultdict(int)
+        for name, fields in all_items.items():
+            curr = {}
+            curr["name"] = name
+            # image_url = generate_image(name)
+            # curr["image_url"] = image_url
+            curr["quantity"] = fields.get("quantity")
+            curr["days_left"] = fields.get("days_left")
+            items.append(curr)
 
-        return "<p>Upload complete</p>"
+            for macro_name, macro_value in fields.get("nutrients").items():
+                macros[macro_name] += macro_value
+
+        # add_items_to_db(items=items)
+
+        return {"items": items, "macros": macros}
 
 
 @app.route("/user", methods=["POST"])
@@ -275,6 +297,16 @@ def get_receipt():
             item.pop("receipts", None)
             item.pop("user", None)
         return jsonify(items)
+    
+@app.route("/get_items", methods=["GET"])
+def get_items():
+    if request.method == "GET":
+        response = dyanmodb.scan(TableName="items")
+
+        items = response.get("Items", [])
+        for item in items:
+            item.pop('items', None)
+        return jsonify(items)
 
 
 def generate_image(food_str: str):
@@ -287,7 +319,7 @@ def generate_image(food_str: str):
         url = s3.generate_presigned_url(
             "get_object",
             Params={"Bucket": bucket_name, "Key": f"{food_str}.png"},
-            ExpiresIn=3600,
+            ExpiresIn=36000,
         )
         return url
 
@@ -309,7 +341,7 @@ def generate_image(food_str: str):
     url = s3.generate_presigned_url(
         "get_object",
         Params={"Bucket": bucket_name, "Key": object_key},
-        ExpiresIn=3600,
+        ExpiresIn=36000,
     )
     return url
 
