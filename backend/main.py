@@ -43,7 +43,7 @@ dyanmodb = boto3.client(
     aws_session_token=os.getenv("AWS_SESSION_TOKEN"),
 )
 
-bucket_name = "cic-hackathon-24-ai-images"
+bucket_name = "users"
 
 activity_levels = ["low", "medium", "high", "veryhigh"]
 
@@ -142,9 +142,9 @@ def create_profile():
             return jsonify({"error": "Invalid activity level"}), 400
 
         dyanmodb.put_item(
-            TableName="cic-hackathon-24",
+            TableName="users",
             Item={
-                "user": {"S": str(id)},
+                "users": {"S": str(id)},
                 "age": {"S": str(age)},
                 "height": {"S": str(height)},
                 "weight": {"S": str(weight)},
@@ -194,6 +194,16 @@ def calculate_fats(cals: int) -> int:
     # 20-35% of total daily calories
     return int(0.275 * cals)
 
+def add_receipt_to_db(receipt_id: int, user_id: int, items: str, cost: int):
+    dyanmodb.put_item(
+        TableName="recipts",
+        Item={
+            "receipt": {"S": str(receipt_id)},
+            "user": {"S": str(user_id)},
+            "items": {"S": items},
+            "cost": {"S": str(cost)},
+        },
+    )
 
 def generate_image(food_str: str):
     food_str = food_str.lower().replace(" ", "")
