@@ -35,12 +35,23 @@ s3 = boto3.client(
     aws_session_token=os.getenv("AWS_SESSION_TOKEN"),
 )
 
+dyanmodb = boto3.client(
+    service_name="dynamodb",
+    region_name=os.getenv("AWS_DEFAULT_REGION"),
+    aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+    aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+    aws_session_token=os.getenv("AWS_SESSION_TOKEN"),
+)
+
 bucket_name = "cic-hackathon-24-ai-images"
+
+activity_levels = ["low", "medium", "high", "veryhigh"]
 
 
 @app.route("/")
 def hello_world():
     return "<p>Hello, World!</p>"
+
 
 # Receives image file and process with ocr
 # Extract food items and their respective information
@@ -116,6 +127,43 @@ def upload():
         print(nutrient_information)
 
         return "<p>Upload complete</p>"
+
+
+@app.route("/user", methods=["POST"])
+def create_profile():
+    if request.method == "POST" and request.content_type == "application/json":
+
+        id = request.json["id"]
+        age = request.json["age"]
+        height = request.json["height"]
+        weight = request.json["weight"]
+        activity_level = request.json["activity_level"].replace(" ", "").lower()
+
+        if activity_level not in activity_levels:
+            return jsonify({"error": "Invalid activity level"}), 400
+
+        dyanmodb.put_item(
+            TableName="cic-hackathon-24",
+            Item={
+                "user": {"S": str(id)},
+                "age": {"S": str(age)},
+                "height": {"S": str(height)},
+                "weight": {"S": str(weight)},
+                "activity_level": {"S": str(activity_level)},
+            },
+        )
+
+    def get_macros(
+        id: int, age: int, height: int, weight: int, activity_level: str
+    ) -> dict:
+        macros = {  
+            "cals": None,
+            "protein": None,
+            "carbs": None,
+            "fats": None,
+        }
+
+        return macros
 
 
 def generate_image(food_str: str):

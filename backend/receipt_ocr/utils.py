@@ -24,27 +24,23 @@ def perform_ocr(img: np.ndarray):
     )
     edged = cv2.Canny(blurred_image, 75, 200)
 
-    # find contours in the edge map and sort them by size in descending
-    # order
+    # find contours in the edge map and sort them by size in descending order
     cnts = cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = imutils.grab_contours(cnts)
     cnts = sorted(cnts, key=cv2.contourArea, reverse=True)
 
     # initialize a contour that corresponds to the receipt outline
     receiptCnt = None
-    # loop over the contours
     for c in cnts:
         # approximate the contour
         peri = cv2.arcLength(c, True)
         approx = cv2.approxPolyDP(c, 0.02 * peri, True)
-        # if our approximated contour has four points, then we can
-        # assume we have found the outline of the receipt
+        # if approximated contour has four points, then we can assume we have found the outline of the receipt
         if len(approx) == 4:
             receiptCnt = approx
             break
 
-    # if the receipt contour is empty then our script could not find the
-    # outline and we should be notified
+    # if the receipt contour is empty
     if receiptCnt is None:
         raise Exception(
             (
@@ -53,16 +49,13 @@ def perform_ocr(img: np.ndarray):
             )
         )
 
-    # apply a four-point perspective transform to the *original* image to
-    # obtain a top-down bird's-eye view of the receipt
+    # apply a four-point perspective transform to the *original* image to obtain a bird's-eye view of the receipt
     receipt = four_point_transform(original_image, receiptCnt.reshape(4, 2) * ratio)
 
-    # apply OCR to the receipt image by assuming column data, ensuring
-    # the text is *concatenated across the row* (additionally, for your
-    # own images you may need to apply additional processing to cleanup
-    # the image, including resizing, thresholding, etc.)
+    # apply OCR to the receipt image by assuming column data
     options = "--psm 6"
     text = pytesseract.image_to_string(
         cv2.cvtColor(receipt, cv2.COLOR_BGR2RGB), config=options
     )
+    
     return text
