@@ -35,6 +35,14 @@ s3 = boto3.client(
     aws_session_token=os.getenv("AWS_SESSION_TOKEN"),
 )
 
+dyanmodb = boto3.client(
+    service_name="dynamodb",
+    region_name=os.getenv("AWS_DEFAULT_REGION"),
+    aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+    aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+    aws_session_token=os.getenv("AWS_SESSION_TOKEN"),
+)
+
 bucket_name = "cic-hackathon-24-ai-images"
 
 
@@ -85,6 +93,40 @@ def upload():
         generated_text = body["generation"]
         print(generated_text)
         return "<p>Upload complete</p>"
+    
+@app.route("/user", methods=["POST"])
+def create_profile():
+    if request.method == "POST":
+        id = request.args['id']
+        age = request.args['age']
+        height = request.args['height']
+        weight = request.args['weight']
+        activity_level = request.args['activity_level']
+
+        dyanmodb.put_item(
+            TableName="cic-hackathon-24",
+            Item={
+                "id": {"N": id},
+                "age": {"N": age},
+                "height": {"N": height},
+                "weight": {"N": weight},
+                "activity_level": {"SS": activity_level},
+            },
+        )
+
+    # Add to table in dynamodb
+    # get macros and return them
+
+    def get_macros(id: int, age: int, height: int, weight: int, activity_level: str) -> dict:
+        macros = {
+            "cals": None,
+            "protein": None,
+            "carbs": None,
+            "fats": None,
+        }
+
+        return macros
+
 
 
 def generate_image(food_str: str):
