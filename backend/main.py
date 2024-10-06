@@ -72,10 +72,9 @@ def upload():
         if image_file.filename == "":
             return jsonify({"error": "No selected file"}), 400
 
-        headers = {"Content-Type": "multipart/form-data"}
+        print(image_file)
         response = requests.post(
-            "http://localhost:8000/ocr/", files={"file": image_file}, headers=headers
-        )
+            "http://localhost:8000/ocr/", files={"file": image_file}       )
         print(response.text)
 
         system_prompt = """
@@ -108,7 +107,7 @@ def upload():
         }
 
         response = bedrock_runtime.invoke_model(**kwargs)
-        body = loads(response["body"].read())
+        body = json.loads(response["body"].read())
         generated_text = body["generation"]
 
         system_prompt_nutrient = """
@@ -131,7 +130,10 @@ def upload():
                     }
                 }
             }
+
+            Above all, the JSON syntax must be valid.
         """
+
 
         prompt_nutrient = f"""
             <|begin_of_text|>
@@ -156,6 +158,7 @@ def upload():
         nutrient_response = bedrock_runtime.invoke_model(**kwargs_nutrient)
         body = loads(nutrient_response["body"].read())
         nutrient_information = body["generation"]
+        print('nutrient_information', nutrient_information)
         all_items = loads(nutrient_information)
         
         items = []

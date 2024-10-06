@@ -14,15 +14,14 @@ async def root():
 
 @app.post("/ocr/")
 async def ocr_receipt(file: UploadFile):
-    if file.content_type.startswith("image"):
-        image_data = await file.read()
-        image_data_array = np.frombuffer(image_data, np.uint8)
+    image_data = await file.read()
+    image_data_array = np.frombuffer(image_data, np.uint8)
         
-        recognized_text = perform_ocr(image_data_array)
+    recognized_text = perform_ocr(image_data_array)
         # cleaned_data = cleanText(recognized_text)
-        return JSONResponse(content=recognized_text, status_code=200)
-    else: 
-        return {"error": "the uploaded file is not an image"}
+    return JSONResponse(content=recognized_text, status_code=200)
+   #  else: 
+    #    return {"error": "the uploaded file is not an image"}
 
 def cleanText(text):
     text = text.replace("\f", "")
