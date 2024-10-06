@@ -115,10 +115,9 @@ def upload():
             You are a helpful AI assistant who is knowledgable in food nutrition. Given a list of food items formatted as a JSON,
             output a JSON object that includes the nutrients including protein, fats, carbohydrates, and calories in amounts.
             Also include the quantity of the item and also predict the number of days until the food item expires. Do not include items that are not considered as food.
-            Only output the JSON and no additional text. It is vital that the JSON syntax is valid and correct.
+            Only output the JSON and no additional text. Above all, the JSON syntax must be valid and correct. 
 
             Here is an example of how each object must be formatted:
-            {
             "name": {
                 "quantity":
                 "cost":
@@ -130,7 +129,8 @@ def upload():
                     "calories":
                     }
                 }
-            }
+
+            There must be commas between each object and the entire object must be wrapped around curly brackets.
         """
 
         prompt_nutrient = f"""
