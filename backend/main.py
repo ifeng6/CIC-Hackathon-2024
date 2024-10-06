@@ -172,7 +172,7 @@ def upload():
             for macro_name, macro_value in fields.get("nutrients").items():
                 macros[macro_name] += macro_value
 
-            cost += fields.get("cost")
+            cost += float(fields.get("cost"))
 
         add_receipt_to_db(receipt_id=receiptId, user_id=userId, items=items, macros=macros, cost=cost)
         add_items_to_db(user_id=userId, items=items)
@@ -253,7 +253,7 @@ def calculate_fats(cals: int) -> int:
 
 # Return true if the receipt is successfully added to the database
 def add_receipt_to_db(
-    receipt_id: int, user_id: int, items: list, macros: object, cost: int
+    receipt_id: int, user_id: int, items: list, macros: object, cost
 ) -> bool:
     try:
         dyanmodb.put_item(
