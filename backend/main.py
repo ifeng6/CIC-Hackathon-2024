@@ -74,7 +74,8 @@ def upload():
 
         print(image_file)
         response = requests.post(
-            "http://localhost:8000/ocr/", files={"file": image_file}       )
+            "http://localhost:8000/ocr/", files={"file": image_file}
+        )
         print(response.text)
 
         system_prompt = """
@@ -102,7 +103,12 @@ def upload():
             "contentType": "application/json",
             "accept": "application/json",
             "body": json.dumps(
-                {"prompt": prompt, "max_gen_len": 1024, "temperature": 0.0, "top_p": 0.2}
+                {
+                    "prompt": prompt,
+                    "max_gen_len": 1024,
+                    "temperature": 0.0,
+                    "top_p": 0.2,
+                }
             ),
         }
 
@@ -134,7 +140,6 @@ def upload():
             There must be commas between each object and the entire object must be wrapped around curly brackets.
         """
 
-
         prompt_nutrient = f"""
             <|begin_of_text|>
             <|start_header_id|>system<|end_header_id|>
@@ -151,16 +156,21 @@ def upload():
             "contentType": "application/json",
             "accept": "application/json",
             "body": json.dumps(
-                {"prompt": prompt_nutrient, "max_gen_len": 2048, "temperature": 0.0, "top_p": 0.2}
+                {
+                    "prompt": prompt_nutrient,
+                    "max_gen_len": 2048,
+                    "temperature": 0.0,
+                    "top_p": 0.2,
+                }
             ),
         }
 
         nutrient_response = bedrock_runtime.invoke_model(**kwargs_nutrient)
         body = loads(nutrient_response["body"].read())
         nutrient_information = body["generation"]
-        print('nutrient_information', nutrient_information)
+        print("nutrient_information", nutrient_information)
         all_items = loads(nutrient_information)
-        
+
         items = []
         macros = defaultdict(int)
         cost = 0
@@ -178,7 +188,9 @@ def upload():
 
             cost += float(fields.get("cost"))
 
-        add_receipt_to_db(receipt_id=receiptId, user_id=userId, items=items, macros=macros, cost=cost)
+        add_receipt_to_db(
+            receipt_id=receiptId, user_id=userId, items=items, macros=macros, cost=cost
+        )
         add_items_to_db(user_id=userId, items=items)
 
         return {"items": items, "macros": macros}
@@ -265,7 +277,7 @@ def add_receipt_to_db(
             Item={
                 "receipts": {"S": str(receipt_id)},
                 "user": {"S": str(user_id)},
-                "items": {"L": items},
+                "items": {"S": str(items)},
                 "macros": {"M": macros},
                 "cost": {"S": str(cost)},
             },
@@ -305,7 +317,8 @@ def get_receipt():
             item.pop("receipts", None)
             item.pop("user", None)
         return jsonify(items)
-    
+
+
 @app.route("/get_items", methods=["GET"])
 def get_items():
     if request.method == "GET":
@@ -313,7 +326,7 @@ def get_items():
 
         items = response.get("Items", [])
         for item in items:
-            item.pop('items', None)
+            item.pop("items", None)
         return jsonify(items)
 
 
