@@ -1,3 +1,4 @@
+// Macro class implementation (as you provided)
 class Macro {
   final double protein; // in grams
   final double carbohydrates; // in grams

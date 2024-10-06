@@ -45,8 +45,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                 ],
               ),
               child: ListTile(
-                title: Text(receipt.vendor),
-                subtitle: Text(receipt.date),
+                title: Text("Receipt $index"),
               ),
             ),
           );
@@ -79,42 +78,16 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 10),
-                  Text(
-                    'Vendor: ${receipt.vendor}',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                  Text(
-                    'Date: ${receipt.date}',
-                    style: TextStyle(fontSize: 18),
-                  ),
                   SizedBox(height: 20),
                   ListView.builder(
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(), // Prevent scrolling conflict
                     itemCount: receipt.items.length,
                     itemBuilder: (context, index) {
-                      final item = receipt.items[index];
-                      String quantityWithUnit;
-          
-                      // Add the appropriate prefix based on the item type
-                      switch (item.type) {
-                        case ItemType.countable:
-                          quantityWithUnit = '${item.quantity} pcs'; // Countable items
-                          break;
-                        case ItemType.liquid:
-                          quantityWithUnit = '${item.quantity} ml'; // Liquid items
-                          break;
-                        case ItemType.weight:
-                          quantityWithUnit = '${item.quantity} kg'; // Weight items
-                          break;
-                        default:
-                          quantityWithUnit = item.quantity.toString(); // Fallback
-                      }
-          
+                      final item = receipt.items[index];          
                       return ListTile(
                         title: Text(item.name),
-                        subtitle: Text(quantityWithUnit),
+                        subtitle: Text(item.quantity.toString()),
                       );
                     },
                   ),

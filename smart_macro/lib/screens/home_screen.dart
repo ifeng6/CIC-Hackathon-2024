@@ -4,6 +4,8 @@ import 'package:fl_chart/fl_chart.dart';  // Import FL Chart
 import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:smart_macro/loading_screens/macro_loading.dart';
+import 'package:smart_macro/loading_screens/pantry_loading.dart';
+import 'package:smart_macro/loading_screens/receipt_loading.dart';
 import 'package:smart_macro/models/item_type.dart';
 import 'package:smart_macro/models/macro.dart';
 import 'package:smart_macro/models/pantry_item.dart';
@@ -46,106 +48,6 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
         MaterialPageRoute(builder: (context) => MacroLoadingPage(xFile: xFile)),
       );
     }
-  }
-
-  List<Receipt> _generateSampleReceipts() {
-    return [
-      Receipt(
-        vendor: 'Grocery Store A',
-        date: '2024-10-01',
-        macros: Macro(protein: 50, carbohydrates: 200, fats: 30),
-        items: [
-          PantryItem(name: 'Rice', type: ItemType.weight, quantity: 2, daysLeftToExpire: 365),
-          PantryItem(name: 'Milk', type: ItemType.liquid, quantity: 1, daysLeftToExpire: 7),
-          PantryItem(name: 'Apples', type: ItemType.countable, quantity: 5, daysLeftToExpire: 10),
-        ],
-      ),
-      Receipt(
-        vendor: 'Grocery Store B',
-        date: '2024-10-02',
-        macros: Macro(protein: 40, carbohydrates: 150, fats: 20),
-        items: [
-          PantryItem(name: 'Chicken Breast', type: ItemType.weight, quantity: 1, daysLeftToExpire: 5),
-          PantryItem(name: 'Olive Oil', type: ItemType.liquid, quantity: 0.5, daysLeftToExpire: 730),
-          PantryItem(name: 'Bananas', type: ItemType.countable, quantity: 6, daysLeftToExpire: 7),
-        ],
-      ),
-      Receipt(
-        vendor: 'Grocery Store C',
-        date: '2024-10-03',
-        macros: Macro(protein: 60, carbohydrates: 180, fats: 25),
-        items: [
-          PantryItem(name: 'Pasta', type: ItemType.weight, quantity: 1, daysLeftToExpire: 365),
-          PantryItem(name: 'Yogurt', type: ItemType.liquid, quantity: 2, daysLeftToExpire: 14),
-          PantryItem(name: 'Eggs', type: ItemType.countable, quantity: 12, daysLeftToExpire: 21),
-        ],
-      ),
-    ];
-  }
-
-  List<PantryItem> generatePantryItems() {
-    return [
-      PantryItem(
-        name: 'Apples',
-        type: ItemType.countable,
-        quantity: 5,
-        daysLeftToExpire: 7,
-      ),
-      PantryItem(
-        name: 'Milk',
-        type: ItemType.liquid,
-        quantity: 1.5, // in liters
-        daysLeftToExpire: 2,
-      ),
-      PantryItem(
-        name: 'Chicken Breast',
-        type: ItemType.weight,
-        quantity: 1.0, // in kg
-        daysLeftToExpire: 3,
-      ),
-      PantryItem(
-        name: 'Orange Juice',
-        type: ItemType.liquid,
-        quantity: 2.0, // in liters
-        daysLeftToExpire: 5,
-      ),
-      PantryItem(
-        name: 'Rice',
-        type: ItemType.countable,
-        quantity: 2, // in kg
-        daysLeftToExpire: 10,
-      ),
-      PantryItem(
-        name: 'Yogurt',
-        type: ItemType.liquid,
-        quantity: 0.5, // in liters
-        daysLeftToExpire: 1, // Expiring soon
-      ),
-      PantryItem(
-        name: 'Flour',
-        type: ItemType.countable,
-        quantity: 1, // in kg
-        daysLeftToExpire: 30,
-      ),
-      PantryItem(
-        name: 'Pasta',
-        type: ItemType.countable,
-        quantity: 1, // in kg
-        daysLeftToExpire: 60,
-      ),
-      PantryItem(
-        name: 'Beef',
-        type: ItemType.weight,
-        quantity: 1.2, // in kg
-        daysLeftToExpire: 4,
-      ),
-      PantryItem(
-        name: 'Cheese',
-        type: ItemType.liquid,
-        quantity: 0.3, // in kg
-        daysLeftToExpire: 8,
-      ),
-    ];
   }
 
   @override
@@ -316,7 +218,7 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ReceiptScreen(receipts: _generateSampleReceipts(),)),
+                    MaterialPageRoute(builder: (context) => ReceiptLoadingPage())
                   );
                 },
               ),
@@ -328,7 +230,7 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => PantryScreen(pantryItems: generatePantryItems(),)),
+                    MaterialPageRoute(builder: (context) => PantryLoadingPage()),
                   );
                 },
               ),
@@ -393,8 +295,8 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
     final List<PieChartSectionData> sections = [];
     const colorMap = {
       'protein': Colors.blue,
-      'carbs': Colors.orange,
-      'fats': Colors.green,
+      'carbs': Colors.green,
+      'fats': Colors.orange,
     };
 
     // Protein section

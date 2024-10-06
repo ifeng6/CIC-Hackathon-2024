@@ -9,7 +9,7 @@ import 'package:http_parser/http_parser.dart'; // Import for MediaType
 /** IP address of the OCR service */
 const SERVER_URL = "http://34.219.112.199:5000";
 
-const OCR_URL = "http://34.219.112.199:8000/ocr/";
+const OCR_URL = "http://34.219.112.199:5000/upload";
 
 int generateRandomId() {
   final math.Random random = math.Random();
@@ -94,17 +94,14 @@ Future<Map<String, dynamic>> sendOcrData(XFile image, String userId) async {
 
 
 
-
-
 Future<Map<String, dynamic>> getReceiptsFromAWS(Map<String, dynamic> requestBody) async {
   try {
     log(jsonEncode(requestBody).toString());
-    final response = await http.post(
-      Uri.parse('$SERVER_URL/receipt'),
+    final response = await http.get(
+      Uri.parse('$SERVER_URL/get_receipt'),
       headers: {
         'Content-Type': 'application/json',
       },
-      body: jsonEncode(requestBody),
     );
     if (response.statusCode == 200) {
       log("Server response:");
