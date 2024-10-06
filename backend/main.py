@@ -84,7 +84,7 @@ def upload():
             Output only the JSON and make sure the JSON is valid syntax. No additional text. Do not include items that are not on the receipt.
         """
 
-        receipt = "/ OS\nCity # 12783\n2285 W 4th Ave, Vancouver, BC V6K 1N9\nB7 Member 832547236\nE 3577445 Apples @ 2 4.72 E\n0623616 Bluetooth Speaker @ 1 179.99\n1826395 Cookies 9.99\n6315178 Bananas @ 3 8.99\n9144381 Ketchup 5.5\n1929371 Detergent 14.99\n1553553 Peanut Butter @ 1 6.79\n7963654 Salmon @ 7 84.99\n0052418 Pasta @ 1 84.99\n0902672 Olives @ 10 13.99\n4872088 Broccoli @ 2 10.90\n0882442 Television 559.71\n4238639 Grapes @ 91bs 9\n2546682 Milk @ 4 8.99\n0083199 0.00\nSUBTOTAL 503.54\nTAX 12.93\neee TOTAL HY\nXXXXXXXXKKXX CHIP Read\nAID: 261X1FpSvpMm\nSeat 307551 APP: = jz8R\nVISA Resp: APPROVED\nTran ID#: 7979661264\nMerchant ID: 768273\nAPPROVED - Purchase\nAMOUNT : 516.47\n10/05/2024 12:33:32 1206 206 256 206\n“OVS SSC«STBL AT\nCHANGE 0.00\nTAX 12.93\nTOTAL TAX 12.93\nTOTAL NUMBER OF ITEMS SOLD= 15\nWyausyeaies 12:33:32 1206 206 256 206\n2U8Z3ZU881549831 /UUU0\nOP: 206 NAME: SCO LANE #206\nThank You.\nPlease Come Again\nWhse: 1206 Trm: 206 Trn: 256 OP: 206\nItems Sold : 15\nB7 10/05/2024 12:33:32\n\f"
+        # receipt = "/ OS\nCity # 12783\n2285 W 4th Ave, Vancouver, BC V6K 1N9\nB7 Member 832547236\nE 3577445 Apples @ 2 4.72 E\n0623616 Bluetooth Speaker @ 1 179.99\n1826395 Cookies 9.99\n6315178 Bananas @ 3 8.99\n9144381 Ketchup 5.5\n1929371 Detergent 14.99\n1553553 Peanut Butter @ 1 6.79\n7963654 Salmon @ 7 84.99\n0052418 Pasta @ 1 84.99\n0902672 Olives @ 10 13.99\n4872088 Broccoli @ 2 10.90\n0882442 Television 559.71\n4238639 Grapes @ 91bs 9\n2546682 Milk @ 4 8.99\n0083199 0.00\nSUBTOTAL 503.54\nTAX 12.93\neee TOTAL HY\nXXXXXXXXKKXX CHIP Read\nAID: 261X1FpSvpMm\nSeat 307551 APP: = jz8R\nVISA Resp: APPROVED\nTran ID#: 7979661264\nMerchant ID: 768273\nAPPROVED - Purchase\nAMOUNT : 516.47\n10/05/2024 12:33:32 1206 206 256 206\n“OVS SSC«STBL AT\nCHANGE 0.00\nTAX 12.93\nTOTAL TAX 12.93\nTOTAL NUMBER OF ITEMS SOLD= 15\nWyausyeaies 12:33:32 1206 206 256 206\n2U8Z3ZU881549831 /UUU0\nOP: 206 NAME: SCO LANE #206\nThank You.\nPlease Come Again\nWhse: 1206 Trm: 206 Trn: 256 OP: 206\nItems Sold : 15\nB7 10/05/2024 12:33:32\n\f"
 
         prompt = f"""
             <|begin_of_text|>
@@ -92,7 +92,7 @@ def upload():
             {system_prompt}
             <|eot_id|>
             <|start_header_id|>receipt<|end_header_id|>
-            {receipt}
+            {response.text}
             <|eot_id|>
             <|start_header_id|>assistant<|end_header_id|>
         """
