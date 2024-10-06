@@ -276,9 +276,9 @@ def add_items_to_db(user_id: int, items: list) -> bool:
                 TableName="items",
                 Item={
                     "items": {"S": str(user_id)},
-                    "name": {"S": item["name"]},
-                    "quantity": {"S": item["quantity"]},
-                    "days_left": {"S": item["days_left"]},
+                    "name": {"S": str(item["name"])},
+                    "quantity": {"S": str(item["quantity"])},
+                    "days_left": {"S": str(item["days_left"])},
                 },
             )
         return True
