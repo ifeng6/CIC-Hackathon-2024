@@ -7,6 +7,7 @@ import os
 import base64
 from collections import defaultdict
 import requests
+from fuzzy_json import loads
 
 load_dotenv()
 
@@ -107,7 +108,7 @@ def upload():
         }
 
         response = bedrock_runtime.invoke_model(**kwargs)
-        body = json.loads(response["body"].read())
+        body = loads(response["body"].read())
         generated_text = body["generation"]
 
         system_prompt_nutrient = """
@@ -153,9 +154,9 @@ def upload():
         }
 
         nutrient_response = bedrock_runtime.invoke_model(**kwargs_nutrient)
-        body = json.loads(nutrient_response["body"].read())
+        body = loads(nutrient_response["body"].read())
         nutrient_information = body["generation"]
-        all_items = json.loads(nutrient_information)
+        all_items = loads(nutrient_information)
         
         items = []
         macros = defaultdict(int)
